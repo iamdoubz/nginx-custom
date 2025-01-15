@@ -6,7 +6,7 @@ V_NGINX="1.27.3"
 V_ZLIB="1.3.1"
 V_PCRE="10.44"
 V_QSSL="3.1.7"
-BUILDROOT="/home/dwdoubet/Gits/nginx-custom"
+BUILDROOT="/home/iamdoubz/Gits/nginx-custom"
 ####################################
 #### END change these variables ####
 ####################################
