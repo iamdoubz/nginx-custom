@@ -23,5 +23,8 @@ Please use the provided script `nginx.sh`. Make sure to make it executable first
 Type `which nginx` and make a copy.
 
 # Install newly compiled binary
-1. `cd /path/to/buildroot`
+1. `cd /path/to/buildroot/nginx-1.27.3`
 2. `sudo make install`
+3. Check nginx `sudo nginx -t`
+4. Reload nginx `sudo nginx -s reload`
+5. Verify new version `sudo nginx -v` should output `nginx version: nginx/1.27.3 (w/GeoIP,Brotli,http3,debug)`
