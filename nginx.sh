@@ -6,6 +6,7 @@ V_NGINX="1.27.3"
 V_ZLIB="1.3.1"
 V_PCRE="10.44"
 V_QSSL="3.1.7"
+V_MAXM="1.12.2"
 BUILDROOT="/home/iamdoubz/Gits/nginx-custom"
 ####################################
 #### END change these variables ####
@@ -57,6 +58,19 @@ cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DCMAKE_C_FLAGS="-Ofast
 cmake --build . --config Release --target brotlienc
 CURRENTDIR="$BUILDROOT"
 cd "$CURRENTDIR"
+CURRENTDIR="$BUILDROOT/libmaxminddb-$V_MAXM"
+if [ ! -d "$CURRENTDIR" ]; then
+  echo "MaxMind downloading..."
+  curl -L -O "https://github.com/maxmind/libmaxminddb/releases/download/$V_MAXM/libmaxminddb-$V_MAXM.tar.gz"
+  echo "MaxMind Extracting..."
+  tar -xzf "libmaxminddb-$V_MAXM.tar.gz"
+  cd "libmaxminddb-$V_MAXM"
+  ./configure
+  make
+  sudo make install
+  # sudo sh -c "echo /usr/local/lib  >> /etc/ld.so.conf.d/local.conf"
+  sudo ldconfig
+fi
 ### START nginx config ###
 CURRENTDIR="$BUILDROOT/nginx-$V_NGINX"
 if [ ! -d "$CURRENTDIR" ]; then
