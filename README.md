@@ -20,7 +20,7 @@ There are quite a few dependencies to install. The main ones being:
 Please use the provided script `nginx.sh`. Make sure to make it executable first `sudo chmod +x nginx.sh`. Then run it with `./nginx.sh`.
 
 # Make a backup of your existing binary
-Type `which nginx` and make a copy.
+Type `which nginx` and make a copy i.e. `sudo cp /usr/sbin/nginx /usr/sbin/nginx_apt`. **NOTE**: if you have *not* installed nginx, you do not have to do this step.
 
 # Install newly compiled binary
 1. `cd /path/to/buildroot/nginx-1.27.3`
