@@ -21,35 +21,38 @@ cd "$CURRENTDIR"
 CURRENTDIR="$BUILDROOT/zlib-$V_ZLIB"
 if [ ! -d "$CURRENTDIR" ]; then
   echo "zlib Downloading..."
-  curl -L -O https://www.zlib.net/zlib-$V_ZLIB.tar.gz
+  curl -L -O "https://www.zlib.net/zlib-$V_ZLIB.tar.gz"
   echo "zlib Extracting..."
-  tar -xzf zlib-$V_ZLIB.tar.gz
+  tar -xzf "zlib-$V_ZLIB.tar.gz"
+  rm "zlib-$V_ZLIB.tar.gz"
 fi
 CURRENTDIR="$BUILDROOT/pcre2-$V_PCRE"
 if [ ! -d "$CURRENTDIR" ]; then
   echo "pcre2 Downloading..."
-  curl -L -O https://github.com/PCRE2Project/pcre2/releases/download/pcre2-$V_PCRE/pcre2-$V_PCRE.tar.gz
+  curl -L -O "https://github.com/PCRE2Project/pcre2/releases/download/pcre2-$V_PCRE/pcre2-$V_PCRE.tar.gz"
   echo "pcre2 Extracting..."
-  tar -xzf pcre2-$V_PCRE.tar.gz
+  tar -xzf "pcre2-$V_PCRE.tar.gz"
+  rm "pcre2-$V_PCRE.tar.gz"
 fi
 CURRENTDIR="$BUILDROOT/openssl-openssl-$V_QSSL-quic1"
 if [ ! -d "$CURRENTDIR" ]; then
   echo "openssl Downloading..."
-  curl -L -O  https://github.com/quictls/openssl/archive/refs/tags/openssl-$V_QSSL-quic1.zip
+  curl -L -O  "https://github.com/quictls/openssl/archive/refs/tags/openssl-$V_QSSL-quic1.zip"
   echo "openssl Extracting..."
-  unzip openssl-$V_QSSL-quic1.zip
+  unzip "openssl-$V_QSSL-quic1.zip"
+  rm "openssl-$V_QSSL-quic1.zip"
 fi
 #### END check dependencies ####
 CURRENTDIR="$BUILDROOT"
 cd "$CURRENTDIR"
 ### START brotli build ###
-CURRENTDIR="$BUILDROOT/ngx_brotli"
+CURRENTDIR="$BUILDROOT/ngx-brotli"
 if [ ! -d "$CURRENTDIR" ]; then
-  git clone --recurse-submodules -j8 https://github.com/google/ngx_brotli ngx_brotli
+  git clone --recurse-submodules -j8 https://github.com/google/ngx_brotli ngx-brotli
 fi
 cd "$CURRENTDIR"
 git pull
-CURRENTDIR="$BUILDROOT/ngx_brotli/deps/brotli/out"
+CURRENTDIR="$BUILDROOT/ngx-brotli/deps/brotli/out"
 if [ ! -d "$CURRENTDIR" ]; then
   mkdir -p "$CURRENTDIR"
 fi
@@ -58,12 +61,21 @@ cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DCMAKE_C_FLAGS="-Ofast
 cmake --build . --config Release --target brotlienc
 CURRENTDIR="$BUILDROOT"
 cd "$CURRENTDIR"
+### START geoip2
+CURRENTDIR="$BUILDROOT/nginx-geoip2"
+if [ ! -d "$CURRENTDIR" ]; then
+  git clone https://github.com/leev/ngx_http_geoip2_module nginx-geoip2
+fi
+cd "$CURRENTDIR"
+git pull
+### START libmaxminddb
 CURRENTDIR="$BUILDROOT/libmaxminddb-$V_MAXM"
 if [ ! -d "$CURRENTDIR" ]; then
   echo "MaxMind downloading..."
   curl -L -O "https://github.com/maxmind/libmaxminddb/releases/download/$V_MAXM/libmaxminddb-$V_MAXM.tar.gz"
   echo "MaxMind Extracting..."
   tar -xzf "libmaxminddb-$V_MAXM.tar.gz"
+  rm "libmaxminddb-$V_MAXM.tar.gz"
   cd "libmaxminddb-$V_MAXM"
   ./configure
   make
@@ -76,18 +88,19 @@ CURRENTDIR="$BUILDROOT/nginx-$V_NGINX"
 if [ ! -d "$CURRENTDIR" ]; then
   curl -L -O "https://nginx.org/download/nginx-$V_NGINX.tar.gz"
   tar -xzf "nginx-$V_NGINX.tar.gz"
+  rm "nginx-$V_NGINX.tar.gz"
 fi
 cd "$CURRENTDIR"
-./configure --build="w/GeoIP,Brotli,http3,debug" --prefix=/etc/nginx --sbin-path=/usr/sbin/nginx --modules-path=/usr/lib/nginx/modules --conf-path=/etc/nginx/nginx.conf --error-log-path=/var/log/nginx/error.log \
+./configure --build="w/GeoIP2,Brotli,H3,debug" --prefix=/etc/nginx --sbin-path=/usr/sbin/nginx --modules-path=/usr/lib/nginx/modules --conf-path=/etc/nginx/nginx.conf --error-log-path=/var/log/nginx/error.log \
             --http-log-path=/var/log/nginx/access.log --pid-path=/var/run/nginx.pid --lock-path=/var/run/nginx.lock --http-client-body-temp-path=/var/cache/nginx/client_temp \
                         --http-proxy-temp-path=/var/cache/nginx/proxy_temp --http-fastcgi-temp-path=/var/cache/nginx/fastcgi_temp --http-uwsgi-temp-path=/var/cache/nginx/uwsgi_temp \
                         --http-scgi-temp-path=/var/cache/nginx/scgi_temp --user=nginx --group=nginx --with-compat --with-file-aio --with-threads --with-http_addition_module \
                         --with-http_auth_request_module --with-http_dav_module --with-http_flv_module --with-http_gunzip_module --with-http_gzip_static_module --with-http_mp4_module \
                         --with-http_random_index_module --with-http_realip_module --with-http_secure_link_module --with-http_slice_module --with-http_ssl_module \
                         --with-http_stub_status_module --with-http_sub_module --with-http_v2_module --with-http_v3_module --with-mail --with-mail_ssl_module --with-stream \
-                        --with-select_module --with-poll_module --with-http_geoip_module --with-stream_geoip_module --with-debug \
+                        --with-select_module --with-poll_module --with-stream_realip_module --with-stream_ssl_module --with-stream_ssl_preread_module --with-debug \
                         --with-zlib=../zlib-$V_ZLIB --with-pcre=../pcre2-$V_PCRE --with-openssl=../openssl-openssl-$V_QSSL-quic1 \
-                        --with-stream_realip_module --with-stream_ssl_module --with-stream_ssl_preread_module --with-openssl-opt='no-asm no-tests' --add-module='../ngx_brotli' \
+                        --with-openssl-opt='no-asm no-tests' --add-module='../ngx-brotli' --add-module='../nginx-geoip2' \
                         --with-cc-opt="-g -O2 -ffile-prefix-map=/data/builder/debuild/nginx-$V_NGINX/debian/debuild-base/nginx-$V_NGINX=. -flto=auto -ffat-lto-objects -flto=auto -ffat-lto-objects -fstack-protector-strong -Wformat -Werror=format-security -Wp,-D_FORTIFY_SOURCE=2 -fPIC -I../openssl-openssl-$V_QSSL-quic1/build/include" \
                         --with-ld-opt="-Wl,-Bsymbolic-functions -flto=auto -ffat-lto-objects -flto=auto -Wl,-z,relro -Wl,-z,now -Wl,--as-needed -pie -L../openssl-openssl-$V_QSSL-quic1/build/lib"
 
