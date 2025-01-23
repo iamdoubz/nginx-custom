@@ -2,12 +2,12 @@
 ####################################
 ### START change these variables ###
 ####################################
-V_NGINX="1.27.3"
+V_NGINX="1.27.4"
 V_ZLIB="1.3.1"
-V_PCRE="10.44"
+V_PCRE="10.45-RC1"
 V_QSSL="3.1.7"
 V_MAXM="1.12.2"
-BUILDROOT="/home/iamdoubz/Gits/nginx-custom"
+BUILDROOT="/home/iamdoubz/Gits/freenginx-custom"
 ####################################
 #### END change these variables ####
 ####################################
@@ -68,6 +68,8 @@ if [ ! -d "$CURRENTDIR" ]; then
 fi
 cd "$CURRENTDIR"
 git pull
+CURRENTDIR="$BUILDROOT"
+cd "$CURRENTDIR"
 ### START libmaxminddb
 CURRENTDIR="$BUILDROOT/libmaxminddb-$V_MAXM"
 if [ ! -d "$CURRENTDIR" ]; then
@@ -83,29 +85,30 @@ if [ ! -d "$CURRENTDIR" ]; then
   # sudo sh -c "echo /usr/local/lib  >> /etc/ld.so.conf.d/local.conf"
   sudo ldconfig
 fi
+CURRENTDIR="$BUILDROOT"
+cd "$CURRENTDIR"
 ### START nginx config ###
-CURRENTDIR="$BUILDROOT/nginx-$V_NGINX"
+CURRENTDIR="$BUILDROOT/nginx-release-$V_NGINX"
 if [ ! -d "$CURRENTDIR" ]; then
-  curl -L -O "https://nginx.org/download/nginx-$V_NGINX.tar.gz"
-  tar -xzf "nginx-$V_NGINX.tar.gz"
-  rm "nginx-$V_NGINX.tar.gz"
+  curl -L -O "https://github.com/freenginx/nginx/archive/refs/tags/release-$V_NGINX.tar.gz"
+  tar -xzf "release-$V_NGINX.tar.gz"
+  rm "release-$V_NGINX.tar.gz"
 fi
 cd "$CURRENTDIR"
-./configure --build="w/GeoIP2,Brotli,H3,debug" --prefix=/etc/nginx --sbin-path=/usr/sbin/nginx --modules-path=/usr/lib/nginx/modules --conf-path=/etc/nginx/nginx.conf --error-log-path=/var/log/nginx/error.log \
-            --http-log-path=/var/log/nginx/access.log --pid-path=/var/run/nginx.pid --lock-path=/var/run/nginx.lock --http-client-body-temp-path=/var/cache/nginx/client_temp \
-                        --http-proxy-temp-path=/var/cache/nginx/proxy_temp --http-fastcgi-temp-path=/var/cache/nginx/fastcgi_temp --http-uwsgi-temp-path=/var/cache/nginx/uwsgi_temp \
-                        --http-scgi-temp-path=/var/cache/nginx/scgi_temp --user=nginx --group=nginx --with-compat --with-file-aio --with-threads --with-http_addition_module \
-                        --with-http_auth_request_module --with-http_dav_module --with-http_flv_module --with-http_gunzip_module --with-http_gzip_static_module --with-http_mp4_module \
-                        --with-http_random_index_module --with-http_realip_module --with-http_secure_link_module --with-http_slice_module --with-http_ssl_module \
-                        --with-http_stub_status_module --with-http_sub_module --with-http_v2_module --with-http_v3_module --with-mail --with-mail_ssl_module --with-stream \
-                        --with-select_module --with-poll_module --with-stream_realip_module --with-stream_ssl_module --with-stream_ssl_preread_module --with-debug \
-                        --with-zlib=../zlib-$V_ZLIB --with-pcre=../pcre2-$V_PCRE --with-openssl=../openssl-openssl-$V_QSSL-quic1 \
-                        --with-openssl-opt='no-asm no-tests' --add-module='../ngx-brotli' --add-module='../nginx-geoip2' \
-                        --with-cc-opt="-g -O2 -ffile-prefix-map=/data/builder/debuild/nginx-$V_NGINX/debian/debuild-base/nginx-$V_NGINX=. -flto=auto -ffat-lto-objects -flto=auto -ffat-lto-objects -fstack-protector-strong -Wformat -Werror=format-security -Wp,-D_FORTIFY_SOURCE=2 -fPIC -I../openssl-openssl-$V_QSSL-quic1/build/include" \
-                        --with-ld-opt="-Wl,-Bsymbolic-functions -flto=auto -ffat-lto-objects -flto=auto -Wl,-z,relro -Wl,-z,now -Wl,--as-needed -pie -L../openssl-openssl-$V_QSSL-quic1/build/lib"
+./auto/configure --build="w/GeoIP2,Brotli,H3,debug" --prefix=/etc/nginx --sbin-path=/usr/sbin/nginx --modules-path=/usr/lib/nginx/modules --conf-path=/etc/nginx/nginx.conf --error-log-path=/var/log/nginx/error.log \
+                 --http-log-path=/var/log/nginx/access.log --pid-path=/var/run/nginx.pid --lock-path=/var/run/nginx.lock --http-client-body-temp-path=/var/cache/nginx/client_temp --http-proxy-temp-path=/var/cache/nginx/proxy_temp \
+                 --http-fastcgi-temp-path=/var/cache/nginx/fastcgi_temp --http-uwsgi-temp-path=/var/cache/nginx/uwsgi_temp --http-scgi-temp-path=/var/cache/nginx/scgi_temp \
+                 --user=nginx --group=nginx --with-compat --with-file-aio --with-threads --with-http_addition_module --with-http_auth_request_module --with-http_dav_module \
+                 --with-http_flv_module --with-http_gunzip_module --with-http_gzip_static_module --with-http_mp4_module --with-http_random_index_module --with-http_realip_module \
+                 --with-http_secure_link_module --with-http_slice_module --with-http_ssl_module --with-http_stub_status_module --with-http_sub_module --with-mail --with-mail_ssl_module \
+                 --with-http_v2_module --with-http_v3_module --with-stream --with-select_module --with-poll_module --with-stream_realip_module --with-stream_ssl_module --with-stream_ssl_preread_module \
+                 --with-debug --with-zlib=../zlib-$V_ZLIB --with-pcre=../pcre2-$V_PCRE --with-openssl=../openssl-openssl-$V_QSSL-quic1 --with-openssl-opt='no-asm no-tests' \
+                 --add-module='../ngx-brotli' --add-module='../nginx-geoip2' \
+                 --with-cc-opt="-g -O2 -ffile-prefix-map=/data/builder/debuild/nginx-$V_NGINX/debian/debuild-base/nginx-$V_NGINX=. -flto=auto -ffat-lto-objects -flto=auto -ffat-lto-objects -fstack-protector-strong -Wformat -Werror=format-security -Wp,-D_FORTIFY_SOURCE=2 -fPIC -I../openssl-openssl-$V_QSSL-quic1/build/include" \
+                 --with-ld-opt="-Wl,-Bsymbolic-functions -flto=auto -ffat-lto-objects -flto=auto -Wl,-z,relro -Wl,-z,now -Wl,--as-needed -pie -L../openssl-openssl-$V_QSSL-quic1/build/lib"
 
 make -j8
 echo " "
-$BUILDROOT/nginx-$V_NGINX/objs/nginx -V
+$BUILDROOT/nginx-release-$V_NGINX/objs/nginx -V
 echo " "
-ls -lh $BUILDROOT/nginx-$V_NGINX/objs/nginx
+ls -lh $BUILDROOT/nginx-release-$V_NGINX/objs/nginx
