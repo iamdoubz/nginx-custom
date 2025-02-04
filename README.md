@@ -5,6 +5,7 @@ Iamdoubz custom nginx config for Ubuntu 22.04. I was tired of forgetting what I 
 - Support for H3/QUIC
 - Brotli compression
 - GeoIP2 (MaxMind)
+- [Headers-More](https://github.com/openresty/headers-more-nginx-module)
 - debug
 
 # Dependencies
@@ -27,4 +28,4 @@ Type `which nginx` and make a copy i.e. `sudo cp /usr/sbin/nginx /usr/sbin/nginx
 2. `sudo make install`
 3. Check nginx `sudo nginx -t`
 4. Reload nginx `sudo nginx -s reload`
-5. Verify new version `sudo nginx -v` should output `nginx version: nginx/1.27.3 (w/GeoIP2,Brotli,H3,debug)`
+5. Verify new version `sudo nginx -v` should output `nginx version: nginx/1.27.3 (w/GeoIP2,Brotli,H3,Headers-More,debug)`
