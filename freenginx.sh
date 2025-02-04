@@ -7,6 +7,7 @@ V_ZLIB="1.3.1"
 V_PCRE="10.45-RC1"
 V_QSSL="3.1.7"
 V_MAXM="1.12.2"
+V_HEAD="0.38"
 BUILDROOT="/home/iamdoubz/Gits/freenginx-custom"
 ####################################
 #### END change these variables ####
@@ -42,6 +43,14 @@ if [ ! -d "$CURRENTDIR" ]; then
   unzip "openssl-$V_QSSL-quic1.zip"
   rm "openssl-$V_QSSL-quic1.zip"
 fi
+CURRENTDIR="$BUILDROOT/headers-more-nginx-module-$V_HEAD"
+if [ ! -d "$CURRENTDIR" ]; then
+  echo "Headers More Downloading..."
+  curl -L -O "https://github.com/openresty/headers-more-nginx-module/archive/refs/tags/v$V_HEAD.zip"
+  echo "Headers More Extracting..."
+  unzip "v$V_HEAD.zip"
+  rm "v$V_HEAD.zip"
+fi
 #### END check dependencies ####
 CURRENTDIR="$BUILDROOT"
 cd "$CURRENTDIR"
@@ -57,7 +66,8 @@ if [ ! -d "$CURRENTDIR" ]; then
   mkdir -p "$CURRENTDIR"
 fi
 cd "$CURRENTDIR"
-cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DCMAKE_C_FLAGS="-Ofast -m64 -march=native -mtune=native -flto -funroll-loops -ffunction-sections -fdata-sections -Wl,--gc-sections" -DCMAKE_CXX_FLAGS="-Ofast -m64 -march=native -mtune=native -flto -funroll-loops -ffunction-sections -fdata-sections -Wl,--gc-sections" -DCMAKE_INSTALL_PREFIX=./installed ..
+cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DCMAKE_C_FLAGS="-Ofast -m64 -march=native -mtune=native -flto -funroll-loops -ffunction-sections -fdata-sections -Wl,--gc-sections" \
+      -DCMAKE_CXX_FLAGS="-Ofast -m64 -march=native -mtune=native -flto -funroll-loops -ffunction-sections -fdata-sections -Wl,--gc-sections" -DCMAKE_INSTALL_PREFIX=./installed ..
 cmake --build . --config Release --target brotlienc
 CURRENTDIR="$BUILDROOT"
 cd "$CURRENTDIR"
@@ -95,7 +105,8 @@ if [ ! -d "$CURRENTDIR" ]; then
   rm "release-$V_NGINX.tar.gz"
 fi
 cd "$CURRENTDIR"
-./auto/configure --build="w/GeoIP2,Brotli,H3,debug" --prefix=/etc/nginx --sbin-path=/usr/sbin/nginx --modules-path=/usr/lib/nginx/modules --conf-path=/etc/nginx/nginx.conf --error-log-path=/var/log/nginx/error.log \
+make clean
+./auto/configure --build="w/GeoIP2,Brotli,H3,Headers-More,debug" --prefix=/etc/nginx --sbin-path=/usr/sbin/nginx --modules-path=/usr/lib/nginx/modules --conf-path=/etc/nginx/nginx.conf --error-log-path=/var/log/nginx/error.log \
                  --http-log-path=/var/log/nginx/access.log --pid-path=/var/run/nginx.pid --lock-path=/var/run/nginx.lock --http-client-body-temp-path=/var/cache/nginx/client_temp --http-proxy-temp-path=/var/cache/nginx/proxy_temp \
                  --http-fastcgi-temp-path=/var/cache/nginx/fastcgi_temp --http-uwsgi-temp-path=/var/cache/nginx/uwsgi_temp --http-scgi-temp-path=/var/cache/nginx/scgi_temp \
                  --user=nginx --group=nginx --with-compat --with-file-aio --with-threads --with-http_addition_module --with-http_auth_request_module --with-http_dav_module \
@@ -103,7 +114,7 @@ cd "$CURRENTDIR"
                  --with-http_secure_link_module --with-http_slice_module --with-http_ssl_module --with-http_stub_status_module --with-http_sub_module --with-mail --with-mail_ssl_module \
                  --with-http_v2_module --with-http_v3_module --with-stream --with-select_module --with-poll_module --with-stream_realip_module --with-stream_ssl_module --with-stream_ssl_preread_module \
                  --with-debug --with-zlib=../zlib-$V_ZLIB --with-pcre=../pcre2-$V_PCRE --with-openssl=../openssl-openssl-$V_QSSL-quic1 --with-openssl-opt='no-asm no-tests' \
-                 --add-module='../ngx-brotli' --add-module='../nginx-geoip2' \
+                 --add-module='../ngx-brotli' --add-module='../nginx-geoip2' --add-module="../headers-more-nginx-module-$V_HEAD" \
                  --with-cc-opt="-g -O2 -ffile-prefix-map=/data/builder/debuild/nginx-$V_NGINX/debian/debuild-base/nginx-$V_NGINX=. -flto=auto -ffat-lto-objects -flto=auto -ffat-lto-objects -fstack-protector-strong -Wformat -Werror=format-security -Wp,-D_FORTIFY_SOURCE=2 -fPIC -I../openssl-openssl-$V_QSSL-quic1/build/include" \
                  --with-ld-opt="-Wl,-Bsymbolic-functions -flto=auto -ffat-lto-objects -flto=auto -Wl,-z,relro -Wl,-z,now -Wl,--as-needed -pie -L../openssl-openssl-$V_QSSL-quic1/build/lib"
 
