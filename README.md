@@ -29,3 +29,6 @@ Type `which nginx` and make a copy i.e. `sudo cp /usr/sbin/nginx /usr/sbin/nginx
 3. Check nginx `sudo nginx -t`
 4. Reload nginx `sudo nginx -s reload`
 5. Verify new version `sudo nginx -v` should output `nginx version: nginx/1.27.3 (w/GeoIP2,Brotli,H3,Headers-More,debug)`
+
+# Windows
+I have pre-compiled both branches for Windows. If you would like to download them, follow the link to my personal Gitea site, and navigate to the "Releases" page.
