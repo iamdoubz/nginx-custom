@@ -8,7 +8,7 @@ V_PCRE="10.45"
 V_QSSL="3.5.0"
 V_MAXM="1.12.2"
 V_HEAD="0.38"
-BUILDROOT="/home/dwdoubet/Gits/free"
+BUILDROOT="/home/iamdoubz/Gits/freenginx-custom"
 ####################################
 #### END change these variables ####
 ####################################
