@@ -8,10 +8,22 @@ V_PCRE="10.45"
 V_QSSL="3.5.0"
 V_MAXM="1.12.2"
 V_HEAD="0.38"
+USE_KTLS=""
+BUILD_INFO="w/GeoIP2,Brotli,H3,Headers-More,Quantum,debug"
 BUILDROOT="/home/iamdoubz/Gits/freenginx-custom"
 ####################################
 #### END change these variables ####
 ####################################
+kernelcheck(){
+  MAJOR_VERSION=$(uname -r | awk -F '.' '{print $1}')
+  MINOR_VERSION=$(uname -r | awk -F '.' '{print $2}')
+  if [ $MAJOR_VERSION -ge 5 ] && [ $MINOR_VERSION -gt 9 ] || [ $MAJOR_VERSION -ge 6 ] ; then
+    return true
+  else
+    return false
+  fi
+}
+
 check_dir()
 {
   path=$1
@@ -70,6 +82,14 @@ check_dir()
       sudo make install &>/dev/null
       # sudo sh -c "echo /usr/local/lib  >> /etc/ld.so.conf.d/local.conf"
       sudo ldconfig &>/dev/null
+    elif [ $what = "ktls" ]; then
+      if [ kernelcheck ] ; then
+        echo " "
+        echo "Enabling KTLS..."
+        sudo modprobe tls
+        USE_KTLS=" enable-ktls"
+        BUILD_INFO="$BUILD_INFO,KTLS"
+      fi
     elif [ $what = "freenginx" ]; then
       echo " "
       echo "freenginx Downloading..."
@@ -132,6 +152,12 @@ cd "$CURRENTDIR"
 CURRENTDIR="$BUILDROOT/libmaxminddb-$V_MAXM"
 check_dir $CURRENTDIR maxmind
 
+#ktls
+CURRENTDIR="$BUILDROOT"
+cd "$CURRENTDIR"
+CURRENTDIR="$BUILDROOT/ktls"
+check_dir $CURRENTDIR ktls
+
 # freenginx
 CURRENTDIR="$BUILDROOT"
 cd "$CURRENTDIR"
@@ -141,21 +167,21 @@ cd "$CURRENTDIR"
 echo " "
 echo " "
 echo "Configuring freenginx..."
-#make clean &>/dev/null
-./auto/configure --build="w/GeoIP2,Brotli,H3,Headers-More,Quantum,debug" --prefix=/etc/nginx --sbin-path=/usr/sbin/nginx --modules-path=/usr/lib/nginx/modules --conf-path=/etc/nginx/nginx.conf --error-log-path=/var/log/nginx/error.log \
+make clean &>/dev/null
+./auto/configure --build="$BUILD_INFO" --prefix=/etc/nginx --sbin-path=/usr/sbin/nginx --modules-path=/usr/lib/nginx/modules --conf-path=/etc/nginx/nginx.conf --error-log-path=/var/log/nginx/error.log \
   --http-log-path=/var/log/nginx/access.log --pid-path=/var/run/nginx.pid --lock-path=/var/run/nginx.lock --http-client-body-temp-path=/var/cache/nginx/client_temp --http-proxy-temp-path=/var/cache/nginx/proxy_temp \
   --http-fastcgi-temp-path=/var/cache/nginx/fastcgi_temp --http-uwsgi-temp-path=/var/cache/nginx/uwsgi_temp --http-scgi-temp-path=/var/cache/nginx/scgi_temp \
   --user=nginx --group=nginx --with-compat --with-file-aio --with-threads --with-http_addition_module --with-http_auth_request_module --with-http_dav_module \
   --with-http_flv_module --with-http_gunzip_module --with-http_gzip_static_module --with-http_mp4_module --with-http_random_index_module --with-http_realip_module \
   --with-http_secure_link_module --with-http_slice_module --with-http_ssl_module --with-http_stub_status_module --with-http_sub_module --with-mail --with-mail_ssl_module \
   --with-http_v2_module --with-http_v3_module --with-stream --with-select_module --with-poll_module --with-stream_realip_module --with-stream_ssl_module --with-stream_ssl_preread_module \
-  --with-zlib=../zlib-$V_ZLIB --with-pcre=../pcre2-$V_PCRE --with-openssl=../openssl-$V_QSSL --with-openssl-opt='no-asm no-tests enable-tls1_3' \
+  --with-zlib=../zlib-$V_ZLIB --with-pcre=../pcre2-$V_PCRE --with-openssl=../openssl-$V_QSSL --with-openssl-opt="no-asm no-tests enable-tls1_3$USE_KTLS" \
   --add-module='../ngx-brotli' --add-module='../nginx-geoip2' --add-module="../headers-more-nginx-module-$V_HEAD" \
   --with-cc-opt="-g -O2 -ffile-prefix-map=/data/builder/debuild/nginx-$V_NGINX/debian/debuild-base/nginx-$V_NGINX=. -flto=auto -ffat-lto-objects -fstack-protector-strong -Wformat -Werror=format-security -Wp,-D_FORTIFY_SOURCE=2 -fPIC -I../openssl-$V_QSSL/build/include" \
   --with-ld-opt="-Wl,-Bsymbolic-functions -flto=auto -ffat-lto-objects -Wl,-z,relro -Wl,-z,now -Wl,--as-needed -pie -L../openssl-$V_QSSL/build/lib" \
-  --with-debug
+  --with-debug > config.log
 echo " "
-make -j8
+make -j8 > make.log
 echo " "
 $BUILDROOT/nginx-release-$V_NGINX/objs/nginx -V
 echo " "
