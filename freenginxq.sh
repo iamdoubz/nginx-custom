@@ -5,7 +5,7 @@
 V_NGINX="1.28.0"
 V_ZLIB="1.3.1"
 V_PCRE="10.45"
-V_QSSL="3.5.0"
+V_QSSL="3.5.1"
 V_MAXM="1.12.2"
 V_HEAD="0.38"
 USE_KTLS=""
