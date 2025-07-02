@@ -7,6 +7,7 @@ Iamdoubz custom freenginx config for Ubuntu 22.04. I was tired of forgetting wha
 - GeoIP2 (MaxMind)
 - [Headers-More](https://github.com/openresty/headers-more-nginx-module)
 - Quantum cryptography
+- KTLS
 - debug
 
 # Dependencies
@@ -20,7 +21,7 @@ There are quite a few dependencies to install. The main ones being:
 - And probably others...
 
 # How to download
-Please use the provided script `freenginx.sh`. Make sure to make it executable first `sudo chmod +x freenginx.sh`. Then run it with `./freenginx.sh`.
+Please use the provided script `freenginx.sh`. Make sure to make it executable first `sudo chmod +x freenginx.sh`. Then run it with `./freenginx.sh`. If you want to use quantum cryptography use `freenginxq.sh`.
 
 # Make a backup of your existing binary
 Type `which nginx` and make a copy i.e. `sudo cp /usr/sbin/nginx /usr/sbin/nginx_apt`. **NOTE**: if you have *not* installed nginx, you do not have to do this step. **NOTE**: this script for freenginx is built as a drop in replacement for nginx.
