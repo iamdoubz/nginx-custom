@@ -3,8 +3,8 @@ Iamdoubz custom nginx config for Ubuntu 22.04. I was tired of forgetting what I 
 
 # Enhancements
 - Support for H3/QUIC
-- Brotli compression
-- GeoIP2 (MaxMind)
+- [Brotli compression](https://github.com/google/ngx_brotli)
+- [GeoIP2](https://github.com/leev/ngx_http_geoip2_module)
 - [Headers-More](https://github.com/openresty/headers-more-nginx-module)
 - Quantum cryptography
 - KTLS
@@ -16,8 +16,14 @@ There are quite a few dependencies to install. The main ones being:
 - git
 - curl
 - wget
+- cmake
 - [libmaxminddb](https://github.com/maxmind/libmaxminddb)
 - And probably others...
+
+# Additional Packages
+- [PCRE2](https://github.com/PCRE2Project/pcre2/)
+- [zlib](https://www.zlib.net/)
+- [openssl](https://github.com/openssl/openssl/)
 
 # How to download
 Please use the provided script `nginx.sh`. Make sure to make it executable first `sudo chmod +x nginx.sh`. Then run it with `./nginx.sh`.
