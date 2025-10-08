@@ -2,19 +2,21 @@
 ####################################
 ### START change these variables ###
 ####################################
-V_NGINX="1.29.1"
+V_NGINX="1.29.2"
 V_ZLIB="1.3.1"
 V_PCRE="10.46"
-V_QSSL="3.5.2"
+V_QSSL="3.5.4"
 V_MAXM="1.12.2"
 V_HEAD="0.38"
-USE_KTLS=""
-BUILD_INFO="w/GeoIP2,Brotli,H3,Headers-More,Quantum,debug"
 BUILDROOT="/home/iamdoubz/Gits/freenginx-custom"
 ####################################
 #### END change these variables ####
 ####################################
-kernelcheck(){
+USE_KTLS=""
+BUILD_INFO="w/GeoIP2,Brotli,H3,Headers-More,Quantum,debug"
+
+kernelcheck()
+{
   MAJOR_VERSION=$(uname -r | awk -F '.' '{print $1}')
   MINOR_VERSION=$(uname -r | awk -F '.' '{print $2}')
   if [ $MAJOR_VERSION -ge 5 ] && [ $MINOR_VERSION -gt 9 ] || [ $MAJOR_VERSION -ge 6 ] ; then
@@ -105,7 +107,6 @@ check_dir()
 
 ### Main script start
 # Create build directory
-
 CURRENTDIR="$BUILDROOT"
 check_dir $CURRENTDIR create
 cd "$CURRENTDIR"
@@ -152,7 +153,7 @@ cd "$CURRENTDIR"
 CURRENTDIR="$BUILDROOT/libmaxminddb-$V_MAXM"
 check_dir $CURRENTDIR maxmind
 
-#ktls
+# ktls
 CURRENTDIR="$BUILDROOT"
 cd "$CURRENTDIR"
 CURRENTDIR="$BUILDROOT/ktls"
