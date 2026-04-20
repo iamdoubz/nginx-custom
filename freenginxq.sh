@@ -2,12 +2,12 @@
 ####################################
 ### START change these variables ###
 ####################################
-V_NGINX="1.29.6"
+V_NGINX="1.30.0"
 V_ZLIB="1.3.2"
 V_PCRE="10.47"
-V_QSSL="3.6.1"
+V_QSSL="3.6.2"
 V_MAXM="1.13.3"
-V_HEAD="0.38"
+V_HEAD="0.39"
 BUILDROOT="/home/iamdoubz/Gits/freenginx-custom"
 ####################################
 #### END change these variables ####
